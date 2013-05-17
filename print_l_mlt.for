@@ -23,35 +23,6 @@ c     Declare output variables
       REAL*8     MLT(NTIMELOCAL)
       REAL*8     Lm(NTIMELOCAL),Lstar(NTIMELOCAL)
 
-ccccccccccccccccccccccccc_USAGE_ccccccccccccccccccccccccc
-      IF (iargc() .lt. 7) then 
-      print*, 'Usage: print_l_mlt fc alt lat lon year doy secs'
-      print*, '12 chars max per item' 
-      print*, 'Input DOUBLES must contain a decimal, INTS must be INTS'
-      print*, 'fc is frame counter only used as an echo (INTEGER)'
-      print*, 'alt is altitude in km(DOUBLE)'
-      print*, 'lat is decimal deg signed latitude (DOUBLE)'
-      print*, 'lon is decimal deg EAST longitdue (DOUBLE)'
-      print*, 'year is ####(INTEGER)'
-      print*, 'doy is day of year 1-366(INTEGER)' 
-      print*, 'secs is decimal seconds of the day 0.0-86399.9(DOUBLE)'
-      endif
-cccccccccccccccccccccccccc_CL_ASSIGNMENT_cccccccc
-      CALL GETARG(1,argv)
-      READ(argv,997) fc
-      CALL GETARG(2,argv)
-      READ(argv,998) xin1
-      CALL GETARG(3,argv)
-      READ(argv,998) xin2
-      CALL GETARG(4,argv)
-      READ(argv,998) xin3
-      CALL GETARG(5,argv)
-      READ(argv,997) iyear
-      CALL GETARG(6,argv)
-      READ(argv,997) idoy
-      CALL GETARG(7,argv)
-      READ(argv,998) UT
-
 ccccccccccccccccccccccc_DEfault_IRBEM_SETUP_ccccccccccccccc
       ntime=1
       kext=4 !selects T89C as field model (valid for Kp=0 to 9
@@ -68,13 +39,19 @@ ccccccccccccccccccccccc_DEfault_IRBEM_SETUP_ccccccccccccccc
       maginput(1,1)=2.0d1 !for T89C we need only specify Kp, in this case nominal=2
 
 ccccccccccccccccccccc
+      open(1, file="sample.txt")
+         read(1,*) fc, xin1, xin2, xin3, iyear, idoy, UT
+         write(*,*) fc, xin1, xin2, xin3, iyear, idoy, UT
+      close(1)
+
+
       call make_lstar1(ntime,kext,options,sysaxes,iyear,idoy,ut, 
      $    xin1,xin2, xin3, maginput, lm,lstar,blocal,bmin,xj,mlt)
       WRITE(6,999) fc, lm, mlt
 
       stop
  
- 997  FORMAT(I7) 
- 998  FORMAT(F10.4)
+ 997  FORMAT(I7, F2.6, F3.6, F3.6, I4, I3, F2.3) 
+ 998  FORMAT(I7,' ', F2.6,' ', F3.6,' ', F3.6,' ', I4,' ', I3,' ', F2.3)
  999  FORMAT(I7,' ', F5.2,' ', F5.2)
       end
